@@ -55,6 +55,14 @@
       filter: sepia(0.6) contrast(0.9) brightness(0.75);
     }
 
+    @media (max-width: 600px) {
+      .hero-photo {
+        object-fit: contain;
+        object-position: center center;
+        background: #1a1208;
+      }
+    }
+
     .hero-overlay {
       position: absolute;
       inset: 0;
