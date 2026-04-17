@@ -6,7 +6,7 @@
   <title>Mario & Mariam – Wedding Invitation</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Great+Vibes&family=Scheherazade+New:wght@400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -20,6 +20,8 @@
       --gold: #c9a84c;
       --gold-light: #e8d08a;
       --font-display: 'Cormorant Garamond', Georgia, serif;
+      --font-script: 'Great Vibes', cursive;
+      --font-arabic: 'Scheherazade New', serif;
       --font-body: 'EB Garamond', Georgia, serif;
     }
 
@@ -128,18 +130,18 @@
     }
 
     .hero-names {
-      font-family: var(--font-display);
-      font-size: clamp(3.2rem, 10vw, 7rem);
-      font-weight: 300;
-      line-height: 1.05;
+      font-family: var(--font-script);
+      font-size: clamp(3.5rem, 11vw, 7.5rem);
+      font-weight: 400;
+      line-height: 1.15;
       color: var(--sepia-cream);
-      letter-spacing: 0.02em;
+      letter-spacing: 0.01em;
     }
 
     .hero-names .ampersand {
-      font-style: italic;
+      font-style: normal;
       color: var(--gold-light);
-      font-size: 0.85em;
+      font-size: 0.9em;
     }
 
     .hero-divider {
@@ -238,6 +240,22 @@
       color: var(--sepia-cream);
       opacity: 0.9;
       margin-bottom: 0.75rem;
+    }
+
+    .arabic-verse {
+      font-family: var(--font-arabic);
+      font-style: normal;
+      font-size: clamp(1.2rem, 2.8vw, 1.65rem);
+      line-height: 2.4;
+      margin-top: 0.5rem;
+    }
+    .arabic-invitation {
+      font-family: var(--font-arabic);
+      font-size: clamp(1.2rem, 2.8vw, 1.6rem);
+      line-height: 2.4;
+      color: var(--sepia-light);
+      direction: rtl;
+      margin-top: 0.5rem;
     }
 
     .bible-ref {
@@ -503,11 +521,21 @@
     </p>
     <p class="bible-ref">Matthew 19:6</p>
 
+    <p class="bible-verse arabic-verse" dir="rtl" lang="ar">
+      «إِذًا لَيْسَا بَعْدُ اثْنَيْنِ، بَلْ جَسَدٌ وَاحِدٌ.<br>
+      فَالَّذِي جَمَعَهُ اللهُ لَا يُفَرِّقُهُ إِنْسَانٌ.»
+    </p>
+    <p class="bible-ref" dir="rtl" lang="ar" style="font-family:var(--font-arabic);">متّى 19: 6</p>
+
     <div class="ornament-divider">✦ ✦ ✦</div>
 
     <p style="font-family:var(--font-display); font-size:clamp(0.95rem,2vw,1.15rem); color:var(--sepia-light); line-height:1.9; max-width:55ch; margin:0 auto;">
       With full hearts and grateful souls, we joyfully invite you<br>
       to witness and celebrate our union in the presence of God.
+    </p>
+
+    <p class="arabic-invitation" lang="ar">
+      نتشرف بدعوتكم بفرح لحضور صلاة الإكليل المبارك
     </p>
 
     <div class="details-grid">
