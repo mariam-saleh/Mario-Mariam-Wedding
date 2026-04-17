@@ -47,22 +47,40 @@
 
     @media (max-width: 600px) {
       .hero {
-        min-height: 100svh;
+        min-height: unset;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow: hidden;
       }
       .hero-photo {
-        object-fit: contain;
-        object-position: center 20%;
-        top: 0;
-        transform: none;
+        position: relative;
+        inset: unset;
+        width: 100%;
+        height: auto;
+        object-fit: unset;
+        object-position: unset;
+        display: block;
+        flex-shrink: 0;
       }
       .hero-overlay {
+        position: absolute;
+        inset: 0;
         background: linear-gradient(
           to bottom,
-          rgba(20,12,4,0.05) 0%,
-          rgba(20,12,4,0.05) 40%,
-          rgba(20,12,4,0.7) 70%,
-          rgba(20,12,4,0.96) 100%
+          rgba(20,12,4,0.0) 0%,
+          rgba(20,12,4,0.0) 50%,
+          rgba(20,12,4,0.75) 75%,
+          rgba(20,12,4,0.97) 100%
         );
+      }
+      .hero-content {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 2rem 1.5rem 3rem;
+        z-index: 2;
       }
     }
 
