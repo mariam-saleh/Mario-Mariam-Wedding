@@ -45,6 +45,16 @@
       overflow: hidden;
     }
 
+    @media (max-width: 600px) {
+      .hero {
+        min-height: 100svh;
+      }
+      .hero-photo {
+        object-fit: cover;
+        object-position: center center;
+      }
+    }
+
     .hero-photo {
       position: absolute;
       inset: 0;
@@ -55,13 +65,6 @@
       filter: sepia(0.6) contrast(0.9) brightness(0.75);
     }
 
-    @media (max-width: 600px) {
-      .hero-photo {
-        object-fit: contain;
-        object-position: center center;
-        background: #1a1208;
-      }
-    }
 
     .hero-overlay {
       position: absolute;
