@@ -18,8 +18,8 @@
     <script>
       (function () {
         document.fonts.ready.then(function () {
-          var el = document.querySelector('.hero-names');
-          if (el) el.style.visibility = 'visible';
+          var el = document.querySelector(".hero-names");
+          if (el) el.style.visibility = "visible";
         });
       })();
     </script>
@@ -719,29 +719,26 @@
       setInterval(updateCountdown, 1000);
     </script>
 
-    <!-- ══ ENVELOPE INTRO OVERLAY ══ -->
+    <!-- ENVELOPE INTRO OVERLAY -->
     <style>
-      /* ── Overlay backdrop ── */
-      #env-overlay {
+      /* OVERLAY BACKDROP */
+      .env-overlay {
         position: fixed;
         inset: 0;
         z-index: 9999;
-        background: radial-gradient(ellipse at 50% 60%, #2b1d0e 0%, #130c04 100%);
+        background: radial-gradient(
+          ellipse at 50% 55%,
+          #1c1106 0,
+          #0a0602 100%
+        );
         display: flex;
         align-items: center;
         justify-content: center;
         overflow: hidden;
-        cursor: pointer;
-      }
-      #env-overlay.fade-out {
-        animation: overlayFadeOut 0.9s cubic-bezier(0.4, 0, 1, 1) forwards;
         pointer-events: none;
       }
-      @keyframes overlayFadeOut {
-        to { opacity: 0; }
-      }
 
-      /* ── Ambient dust particles ── */
+      /* AMBIENT DUST MOTES */
       .env-dust {
         position: absolute;
         inset: 0;
@@ -750,292 +747,460 @@
       }
       .env-dust span {
         position: absolute;
-        width: 2px;
-        height: 2px;
         border-radius: 50%;
         background: #c9a84c;
         opacity: 0;
-        animation: dustFloat var(--d, 6s) var(--delay, 0s) ease-in-out infinite;
+        animation: dustFloat var(--d, 7s) var(--delay, 0s) ease-in-out infinite;
       }
       @keyframes dustFloat {
-        0%   { opacity: 0;   transform: translateY(0)   translateX(0); }
-        20%  { opacity: 0.4; }
-        80%  { opacity: 0.2; }
-        100% { opacity: 0;   transform: translateY(-120px) translateX(var(--dx, 20px)); }
+        0% {
+          opacity: 0.5;
+          transform: translate(0, 0);
+        }
+        25% {
+          opacity: 0.9;
+        }
+        75% {
+          opacity: 0.5;
+        }
+        100% {
+          opacity: 0;
+          transform: translate(var(--dx, 15px), -140px);
+        }
       }
 
-      /* ── Envelope scene wrapper ── */
-      #env-scene {
+      /* VIGNETTE around envelope */
+      .env-vignette {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          ellipse 65% 60% at 50% 55%,
+          transparent 30%,
+          rgba(0, 0, 0, 0.72) 100%
+        );
+        pointer-events: none;
+      }
+
+      /* ENVELOPE SCENE WRAPPER */
+      .env-scene {
         position: relative;
-        width: min(380px, 88vw);
-        perspective: 900px;
-      }
-
-      /* ── Hint text ── */
-      #env-hint {
-        text-align: center;
-        font-family: "EB Garamond", Georgia, serif;
-        font-size: 0.72rem;
-        letter-spacing: 0.28em;
-        text-transform: uppercase;
-        color: #c4a97d;
-        opacity: 0;
-        margin-top: 1.6rem;
-        animation: hintAppear 1s 2.2s ease-out forwards;
-      }
-      @keyframes hintAppear {
-        to { opacity: 0.6; }
-      }
-
-      /* ══ ENVELOPE SVG container ══ */
-      #env-svg-wrap {
-        width: 100%;
-        filter: drop-shadow(0 20px 60px rgba(0,0,0,0.7));
-        animation: envSettle 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        transform: translateY(40px);
+        width: min(400px, 86vw);
+        perspective: 1000px;
+        animation: envSettle 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        transform: translateY(50px) scale(0.88);
         opacity: 0;
       }
       @keyframes envSettle {
-        to { transform: translateY(0); opacity: 1; }
+        to {
+          transform: translateY(0) scale(1);
+          opacity: 1;
+        }
       }
 
-      /* ── SVG itself ── */
-      #env-svg { width: 100%; height: auto; display: block; overflow: visible; }
+      /* Phase 3 burst expand to full viewport */
+      .env-scene.burst {
+        animation: envBurst 1.1s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
+        transform-origin: center center;
+      }
+      @keyframes envBurst {
+        0% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        60% {
+          transform: scale(6);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(18);
+          opacity: 0;
+        }
+      }
 
-      /* ── Envelope body (back, sides, bottom) ── */
-      .env-body { fill: #d4b483; }
-      .env-body-shadow { fill: #b8955f; }
-      .env-flap-back { fill: #c9a055; }
+      /* SVG ENVELOPE */
+      #env-svg {
+        width: 100%;
+        height: auto;
+        display: block;
+        overflow: visible;
+        filter: drop-shadow(0 16px 48px rgba(0, 0, 0, 0.85));
+      }
 
-      /* ── Wax seal ── */
-      #env-seal circle { fill: #8b1a1a; }
-      #env-seal path  { fill: #a01e1e; }
-      #env-seal text  { fill: #f0d8a0; font-family: "Imperial Script", cursive; font-size: 18px; }
-
-      /* ── Front flap (folds up & back) ── */
-      #env-flap {
+      /* Flap open animation */
+      .env-flap {
         transform-origin: 50% 0%;
         transform-box: fill-box;
       }
-      /* State machine driven by JS classes on #env-svg */
-      #env-svg.opening #env-flap {
-        animation: flapOpen 1.1s 0.15s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      #env-svg.opening .env-flap {
+        /* was 1.3s, slightly slower now */
+        animation: flapOpen 1.5s 0.1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
       }
       @keyframes flapOpen {
-        0%   { transform: rotateX(0deg);    }
-        50%  { transform: rotateX(-100deg); }
-        100% { transform: rotateX(-180deg); }
+        0% {
+          transform: rotateX(0deg);
+        }
+        45% {
+          transform: rotateX(-95deg);
+        }
+        100% {
+          transform: rotateX(-178deg);
+        }
       }
 
-      /* ── Seal cracks and fades as flap opens ── */
-      #env-seal {
-        transition: opacity 0.4s ease-in;
-      }
-      #env-svg.opening #env-seal {
+      /* Mouth shadow deepens as flap opens */
+      .env-mouth-shadow {
         opacity: 0;
+        transition: opacity 0.5s 0.3s ease-in;
+      }
+      #env-svg.opening .env-mouth-shadow {
+        opacity: 1;
       }
 
-      /* ── Letter card rises out of envelope ── */
-      #env-letter {
-        transform-origin: 50% 100%;
-        transform-box: fill-box;
-        opacity: 0;
-        transform: translateY(0px);
+      /* OVERLAY FADE-OUT after burst */
+      .env-overlay.dissolve {
+        animation: overlayDissolve 0.6s ease-in forwards;
       }
-      #env-svg.letter-rising #env-letter {
-        animation: letterRise 1.0s 0.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-      }
-      @keyframes letterRise {
-        0%   { opacity: 0; transform: translateY(10px);  }
-        30%  { opacity: 1; }
-        100% { opacity: 1; transform: translateY(-88px); }
+      @keyframes overlayDissolve {
+        to {
+          opacity: 0;
+        }
       }
 
-      /* ── Letter content (M&M monogram) ── */
-      .ltr-body    { fill: #f5ead6; }
-      .ltr-lines   { stroke: #c4a97d; stroke-width: 0.8; opacity: 0.45; }
-      .ltr-mono    { fill: #8b6914; font-family: "Imperial Script", cursive; font-size: 32px; }
-      .ltr-sub     { fill: #a07840; font-family: "EB Garamond", Georgia, serif; font-size: 7px; letter-spacing: 3px; }
-
-      /* ── Reduced-motion fallback ── */
+      /* REDUCED-MOTION: skip straight through */
       @media (prefers-reduced-motion: reduce) {
-        #env-svg-wrap, #env-flap, #env-letter, #env-seal, #env-overlay.fade-out {
+        .env-scene,
+        .env-flap,
+        .env-mouth-shadow,
+        .env-scene.burst,
+        .env-overlay.dissolve {
           animation: none !important;
           transition: none !important;
         }
-        #env-svg-wrap { opacity: 1; transform: none; }
+        .env-scene {
+          opacity: 1;
+          transform: none;
+        }
+        .env-overlay {
+          opacity: 0;
+          pointer-events: none;
+        }
       }
     </style>
 
-    <div id="env-overlay" role="button" aria-label="Open your wedding invitation" tabindex="0">
-      <!-- Dust particles -->
-      <div class="env-dust" aria-hidden="true" id="env-dust"></div>
+    <div id="env-overlay" class="env-overlay" aria-hidden="true">
+      <div id="env-dust" class="env-dust"></div>
+      <div id="env-vignette" class="env-vignette"></div>
 
-      <div id="env-scene">
-        <div id="env-svg-wrap">
-          <!--
-            Envelope coordinate system: 400 wide × 280 tall
-            Origin top-left. Flap triangle peaks at centre-top (200, 0).
-            Letter card sits behind the front face, slides upward on open.
-          -->
-          <svg id="env-svg" viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <defs>
-              <!-- Parchment texture gradient -->
-              <linearGradient id="bodyGrad" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%"  stop-color="#dfc08c"/>
-                <stop offset="50%" stop-color="#c9a55a"/>
-                <stop offset="100%" stop-color="#b8925a"/>
-              </linearGradient>
-              <linearGradient id="flapGrad" x1="0.5" y1="0" x2="0.5" y2="1">
-                <stop offset="0%"  stop-color="#c9a055"/>
-                <stop offset="100%" stop-color="#a07030"/>
-              </linearGradient>
-              <linearGradient id="letterGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%"  stop-color="#f8f0e0"/>
-                <stop offset="100%" stop-color="#ede0c4"/>
-              </linearGradient>
-              <!-- Inner shadow on envelope mouth -->
-              <linearGradient id="mouthShadow" x1="0.5" y1="0" x2="0.5" y2="1">
-                <stop offset="0%"  stop-color="rgba(0,0,0,0.25)"/>
-                <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
-              </linearGradient>
-              <!-- Subtle paper noise filter -->
-              <filter id="paper" x="0" y="0" width="100%" height="100%">
-                <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" result="noise"/>
-                <feColorMatrix type="saturate" values="0" in="noise" result="grayNoise"/>
-                <feBlend in="SourceGraphic" in2="grayNoise" mode="multiply" result="blend"/>
-                <feComposite in="blend" in2="SourceGraphic" operator="in"/>
-              </filter>
-              <!-- Clip so letter card stays inside envelope mouth -->
-              <clipPath id="envelopeClip">
-                <rect x="8" y="90" width="384" height="184"/>
-              </clipPath>
-            </defs>
+      <div id="env-scene" class="env-scene">
+        <!-- ViewBox 400x280. Antique royal envelope. -->
+        <svg
+          id="env-svg"
+          viewBox="0 0 400 280"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <defs>
+            <!-- Aged parchment body gradient (more antique) -->
+            <linearGradient id="gBody" x1="10" y1="10" x2="21" y2="21">
+              <!-- warm cream highlight -->
+              <stop offset="0" stop-color="#e8dcc4" />
+              <!-- mid parchment -->
+              <stop offset="0.45" stop-color="#c9b18a" />
+              <!-- aged edge -->
+              <stop offset="1" stop-color="#7b5a37" />
+            </linearGradient>
 
-            <!-- ── 1. ENVELOPE BACK BODY (always visible) ── -->
-            <rect x="4" y="90" width="392" height="186" rx="4" ry="4" fill="url(#bodyGrad)" filter="url(#paper)"/>
+            <!-- Flap: richer, royal face -->
+            <linearGradient id="gFlap" x1="10.5" y1="10" x2="20.5" y2="21">
+              <!-- golden-ochre top -->
+              <stop offset="0" stop-color="#d2a85a" />
+              <!-- deep royal brown bottom -->
+              <stop offset="1" stop-color="#724524" />
+            </linearGradient>
 
-            <!-- ── 2. BACK-FLAP triangle (behind letter) ── -->
-            <polygon class="env-flap-back" points="4,90 200,200 396,90" filter="url(#paper)"/>
+            <!-- Side shadows -->
+            <linearGradient id="gSideL" x1="10" y1="10" x2="21" y2="20">
+              <stop offset="0" stop-color="#3d2a0e" />
+              <stop offset="1" stop-color="#5c4020" />
+            </linearGradient>
+            <linearGradient id="gSideR" x1="10" y1="10" x2="21" y2="20">
+              <stop offset="0" stop-color="#6b4a26" />
+              <stop offset="1" stop-color="#3d2a0e" />
+            </linearGradient>
 
-            <!-- ── 3. LETTER CARD (clipped, rises upward) ── -->
-            <g id="env-letter" clip-path="url(#envelopeClip)">
-              <!-- card body -->
-              <rect x="60" y="102" width="280" height="200" rx="3" fill="url(#letterGrad)" filter="url(#paper)"/>
-              <!-- ruled lines suggestion -->
-              <line class="ltr-lines" x1="80" y1="145" x2="320" y2="145"/>
-              <line class="ltr-lines" x1="80" y1="160" x2="320" y2="160"/>
-              <line class="ltr-lines" x1="80" y1="175" x2="320" y2="175"/>
-              <line class="ltr-lines" x1="80" y1="190" x2="320" y2="190"/>
-              <!-- M & M monogram -->
-              <text class="ltr-mono" x="200" y="135" text-anchor="middle">M &amp; M</text>
-              <!-- subtle tagline -->
-              <text class="ltr-sub" x="200" y="210" text-anchor="middle">22 · V · MMXXVI</text>
-            </g>
+            <!-- Dark interior visible when open (deeper, older) -->
+            <linearGradient id="gInterior" x1="10.5" y1="10" x2="20.5" y2="21">
+              <stop offset="0" stop-color="#140b04" />
+              <stop offset="1" stop-color="#26160a" />
+            </linearGradient>
 
-            <!-- ── 4. SIDE TRIANGLES (left & right shadow faces) ── -->
-            <polygon class="env-body-shadow" points="4,90 200,200 4,276" filter="url(#paper)"/>
-            <polygon class="env-body-shadow" points="396,90 200,200 396,276" filter="url(#paper)"/>
+            <!-- Inner-mouth depth shadow -->
+            <linearGradient id="gMouth" x1="10.5" y1="10" x2="20.5" y2="21">
+              <stop offset="0" stop-color="rgba(0,0,0,0.65)" />
+              <stop offset="1" stop-color="rgba(0,0,0,0)" />
+            </linearGradient>
 
-            <!-- ── 5. BOTTOM TRIANGLE ── -->
-            <polygon class="env-body" points="4,276 200,200 396,276" filter="url(#paper)"/>
+            <!-- Heavy paper-age SVG filter: grain, stains, scratches -->
+            <filter
+              id="fAge"
+              x="-2%"
+              y="-2%"
+              width="104%"
+              height="104%"
+              color-interpolation-filters="sRGB"
+            >
+              <!-- base grain -->
+              <feTurbulence
+                type="fractalNoise"
+                baseFrequency="0.55 0.45"
+                numOctaves="4"
+                seed="7"
+                stitchTiles="stitch"
+                result="grain"
+              />
+              <!-- desaturate grain -->
+              <feColorMatrix
+                type="saturate"
+                values="0"
+                in="grain"
+                result="greyGrain"
+              />
+              <!-- burn grain into source -->
+              <feBlend
+                in="SourceGraphic"
+                in2="greyGrain"
+                mode="multiply"
+                result="burned"
+              />
+              <!-- coarser turbulence for patchy staining -->
+              <feTurbulence
+                type="turbulence"
+                baseFrequency="0.035 0.028"
+                numOctaves="2"
+                seed="13"
+                stitchTiles="stitch"
+                result="stain"
+              />
+              <feColorMatrix
+                in="stain"
+                type="matrix"
+                values="
+              0.18 0    0    0    0.04
+              0.12 0    0    0    0.02
+              0.05 0    0    0    0
+              0    0    0    0.55 0"
+                result="tintedStain"
+              />
+              <feBlend
+                in="burned"
+                in2="tintedStain"
+                mode="multiply"
+                result="stained"
+              />
+              <!-- micro-scratch lines via displacement -->
+              <feTurbulence
+                type="fractalNoise"
+                baseFrequency="2 0.04"
+                numOctaves="1"
+                seed="3"
+                result="scratches"
+              />
+              <feDisplacementMap
+                in="stained"
+                in2="scratches"
+                scale="1.8"
+                xChannelSelector="R"
+                yChannelSelector="G"
+                result="scratched"
+              />
+              <!-- soft vignette blur on edges -->
+              <feGaussianBlur
+                in="scratched"
+                stdDeviation="0.35"
+                result="soft"
+              />
+              <!-- clip back to source -->
+              <feComposite in="soft" in2="SourceGraphic" operator="in" />
+            </filter>
 
-            <!-- ── 6. FRONT FLAP (rotates open) ── -->
-            <g id="env-flap">
-              <!-- flap face -->
-              <polygon points="4,90 200,220 396,90" fill="url(#flapGrad)" filter="url(#paper)"/>
-              <!-- subtle fold highlight -->
-              <line x1="4" y1="90" x2="200" y2="220" stroke="rgba(255,220,140,0.18)" stroke-width="1"/>
-              <line x1="396" y1="90" x2="200" y2="220" stroke="rgba(255,220,140,0.18)" stroke-width="1"/>
-            </g>
+            <!-- Worn edge irregular torn border -->
+            <filter id="fEdge" x="-4%" y="-4%" width="108%" height="108%">
+              <feTurbulence
+                type="fractalNoise"
+                baseFrequency="0.04"
+                numOctaves="4"
+                seed="5"
+                result="warp"
+              />
+              <feDisplacementMap
+                in="SourceGraphic"
+                in2="warp"
+                scale="2.4"
+                xChannelSelector="R"
+                yChannelSelector="G"
+              />
+            </filter>
+          </defs>
 
-            <!-- ── 7. WAX SEAL (sits on flap centre) ── -->
-            <g id="env-seal">
-              <!-- outer ring -->
-              <circle cx="200" cy="168" r="26" fill="#6b1010" opacity="0.9"/>
-              <!-- main disc -->
-              <circle cx="200" cy="168" r="22" fill="#8b1a1a"/>
-              <!-- inner ring groove -->
-              <circle cx="200" cy="168" r="19" fill="none" stroke="#a52020" stroke-width="1.2" opacity="0.6"/>
-              <!-- monogram -->
-              <text x="200" y="175" text-anchor="middle" font-family="'Imperial Script', cursive" font-size="18" fill="#f0d8a0">M</text>
-              <!-- drip left -->
-              <ellipse cx="185" cy="185" rx="4" ry="6" fill="#6b1010" transform="rotate(-20,185,185)" opacity="0.75"/>
-              <!-- drip right -->
-              <ellipse cx="214" cy="187" rx="3" ry="5" fill="#6b1010" transform="rotate(15,214,187)" opacity="0.65"/>
-            </g>
+          <!-- 1. DARK INTERIOR shows through open mouth -->
+          <rect
+            id="env-interior"
+            x="4"
+            y="90"
+            width="392"
+            height="186"
+            rx="3"
+            fill="url(#gInterior)"
+          />
 
-            <!-- ── 8. ENVELOPE BORDER / TRIM ── -->
-            <rect x="4" y="90" width="392" height="186" rx="4" ry="4"
-                  fill="none" stroke="#9a7435" stroke-width="1.2" opacity="0.55"/>
+          <!-- 2. BACK-FLAP triangle -->
+          <polygon
+            points="4,90 200,196 396,90"
+            fill="url(#gBody)"
+            filter="url(#fAge)"
+            opacity="0.9"
+          />
 
-            <!-- ── 9. INNER MOUTH SHADOW (depth when open) ── -->
-            <rect x="4" y="90" width="392" height="32" fill="url(#mouthShadow)" opacity="0" id="env-mouth-shadow"/>
-          </svg>
-        </div>
+          <!-- 3. LEFT SIDE TRIANGLE -->
+          <polygon
+            points="4,90 200,196 4,276"
+            fill="url(#gSideL)"
+            filter="url(#fAge)"
+          />
 
-        <p id="env-hint">tap to open</p>
+          <!-- 4. RIGHT SIDE TRIANGLE -->
+          <polygon
+            points="396,90 200,196 396,276"
+            fill="url(#gSideR)"
+            filter="url(#fAge)"
+          />
+
+          <!-- 5. BOTTOM TRIANGLE -->
+          <polygon
+            points="4,276 200,196 396,276"
+            fill="url(#gBody)"
+            filter="url(#fAge)"
+            opacity="0.85"
+          />
+
+          <!-- 6. OUTER BORDER worn, rough -->
+          <rect
+            x="4"
+            y="90"
+            width="392"
+            height="186"
+            rx="3"
+            fill="none"
+            stroke="#3d2a0e"
+            stroke-width="1.5"
+            opacity="0.6"
+            filter="url(#fEdge)"
+          />
+
+          <!-- 7. FRONT FLAP rotates open -->
+          <g class="env-flap">
+            <polygon
+              points="4,90 200,222 396,90"
+              fill="url(#gFlap)"
+              filter="url(#fAge)"
+            />
+            <!-- subtle worn crease highlights -->
+            <line
+              x1="4"
+              y1="190"
+              x2="200"
+              y2="222"
+              stroke="rgba(180,140,80,0.12)"
+              stroke-width="1"
+            />
+            <line
+              x1="396"
+              y1="190"
+              x2="200"
+              y2="222"
+              stroke="rgba(180,140,80,0.12)"
+              stroke-width="1"
+            />
+          </g>
+
+          <!-- 8. MOUTH DEPTH SHADOW -->
+          <rect
+            id="env-mouth-shadow"
+            class="env-mouth-shadow"
+            x="4"
+            y="90"
+            width="392"
+            height="38"
+            fill="url(#gMouth)"
+          />
+        </svg>
       </div>
     </div>
 
     <script>
-    (function () {
-      /* ── Spawn dust particles ── */
-      var dust = document.getElementById('env-dust');
-      for (var i = 0; i < 28; i++) {
-        var s = document.createElement('span');
-        s.style.left   = (Math.random() * 100) + '%';
-        s.style.top    = (40 + Math.random() * 55) + '%';
-        s.style.setProperty('--d',     (4 + Math.random() * 5) + 's');
-        s.style.setProperty('--delay', (Math.random() * 4) + 's');
-        s.style.setProperty('--dx',    (Math.random() * 40 - 20) + 'px');
-        s.style.width  = (1 + Math.random() * 2.5) + 'px';
-        s.style.height = s.style.width;
-        s.style.opacity = '0';
-        dust.appendChild(s);
-      }
+      (function () {
+        var dustContainer = document.getElementById("env-dust");
+        var overlay = document.getElementById("env-overlay");
+        var scene = document.getElementById("env-scene");
+        var envSvg = document.getElementById("env-svg");
 
-      /* ── State machine ── */
-      var overlay  = document.getElementById('env-overlay');
-      var envSvg   = document.getElementById('env-svg');
-      var shadow   = document.getElementById('env-mouth-shadow');
-      var phase    = 'idle'; // idle → opening → rising → done
+        if (!overlay || !scene || !envSvg || !dustContainer) return;
 
-      function open() {
-        if (phase !== 'idle') return;
-        phase = 'opening';
+        // Spawn dust motes
+        for (var i = 0; i < 900; i++) {
+          var mote = document.createElement("span");
+          mote.style.cssText = [
+            "left:" + (Math.random() * 100).toFixed(2) + "%",
+            "top:" + (30 + Math.random() * 60).toFixed(2) + "%",
+            "width:" + (1.5 + Math.random() * 3.5).toFixed(2) + "px",
+            "height:" + (1.5 + Math.random() * 3.5).toFixed(2) + "px",
+          ].join(";");
+          mote.style.setProperty(
+            "--d",
+            (5 + Math.random() * 6).toFixed(2) + "s",
+          );
+          mote.style.setProperty(
+            "--delay",
+            (Math.random() * 5).toFixed(2) + "s",
+          );
+          mote.style.setProperty(
+            "--dx",
+            (Math.random() * 50 - 25).toFixed(2) + "px",
+          );
+          dustContainer.appendChild(mote);
+          var baseSize = 1 + Math.random() * 3;
+          if (Math.random() < 0.15) baseSize += 2; // 15% of motes are larger
+          mote.style.width = baseSize + "px";
+          mote.style.height = baseSize + "px";
+        }
 
-        // Reveal inner mouth shadow for depth
-        shadow.setAttribute('opacity', '0.6');
+        // Timeline (all automatic)
+        // 0.0s   envelope settles in via CSS (envSettle)
+        // 2.0s   flap begins to open
+        // 3.4s   burst expand
+        // 4.2s   overlay dissolve
+        // 4.85s  remove overlay from DOM
 
-        // Trigger flap animation via class
-        envSvg.classList.add('opening');
-
-        // After flap finishes (~1.3s), start letter rising
+        // Step 1: wait for settle, then open flap
         setTimeout(function () {
-          phase = 'rising';
-          envSvg.classList.add('letter-rising');
+          envSvg.classList.add("opening");
+        }, 200); // was 1800
 
-          // After letter has fully risen (~1.2s), fade out overlay
-          setTimeout(function () {
-            phase = 'done';
-            overlay.classList.add('fade-out');
+        // Step 2: flap is open, trigger burst expansion
+        setTimeout(function () {
+          scene.classList.add("burst");
+        }, 1800); // was 3200
 
-            // Remove from DOM after fade completes
-            setTimeout(function () {
-              overlay.remove();
-            }, 950);
-          }, 1200);
-        }, 1300);
-      }
+        // Step 3: dissolve the whole overlay
+        setTimeout(function () {
+          overlay.classList.add("dissolve");
+        }, 2500); // was 4000
 
-      overlay.addEventListener('click', open);
-      overlay.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
-      });
-    })();
+        // Step 4: remove from DOM
+        setTimeout(function () {
+          overlay.remove();
+        }, 3200); // was 4650
+      })();
     </script>
-    <!-- ══ END ENVELOPE INTRO ══ -->
-
+    <!-- END ENVELOPE INTRO -->
   </body>
 </html>
