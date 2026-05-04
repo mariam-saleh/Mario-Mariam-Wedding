@@ -1188,22 +1188,22 @@
         // Step 1: wait for settle, then open flap
         setTimeout(function () {
           envSvg.classList.add("opening");
-        }, 800); // was 1800
+        }, 1800); // was 1800
 
         // Step 2: flap is open, trigger burst expansion
         setTimeout(function () {
           scene.classList.add("burst");
-        }, 2000); // was 3200
+        }, 3200); // was 3200
 
         // Step 3: dissolve the whole overlay
         setTimeout(function () {
           overlay.classList.add("dissolve");
-        }, 2700); // was 4000
+        }, 4000); // was 4000
 
         // Step 4: remove from DOM
         setTimeout(function () {
           overlay.remove();
-        }, 3000); // was 4650
+        }, 4600); // was 4650
       })();
     </script>
     <!-- END ENVELOPE INTRO -->
