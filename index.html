@@ -1146,13 +1146,13 @@
         if (!overlay || !scene || !envSvg || !dustContainer) return;
 
         // Spawn dust motes
-        for (var i = 0; i < 150; i++) {
+        for (var i = 0; i < 100; i++) {
           var mote = document.createElement("span");
           mote.style.cssText = [
             "left:" + (Math.random() * 100).toFixed(2) + "%",
             "top:" + (30 + Math.random() * 60).toFixed(2) + "%",
-            "width:" + (1.5 + Math.random() * 3.5).toFixed(2) + "px",
-            "height:" + (1.5 + Math.random() * 3.5).toFixed(2) + "px",
+            "width:" + (1 + Math.random() * 3).toFixed(2) + "px",
+            "height:" + (1 + Math.random() * 3).toFixed(2) + "px",
           ].join(";");
           mote.style.setProperty(
             "--d",
